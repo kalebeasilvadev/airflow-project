@@ -32,73 +32,63 @@ postgresql:
       enabled: true
     resources:
       requests:
-        cpu: 250m
-        memory: 256Mi
-      limits:
         cpu: 500m
         memory: 512Mi
-
+      limits:
+        cpu: 1
+        memory: 1Gi
     containerSecurityContext:
       runAsUser: 1001
       runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
 
-    # ⚠️ Impede que o PostgreSQL veja todos os CPUs
-    extraFlags:
-      - "--cpu=0.5"
-
-    # 🔽 alternativo: usar cpulimit na entrada (gambiarra mais forte)
-    extraEnvVars:
-      - name: PG_CPU_LIMIT
-        value: "0.5"
-
-
-
 webserver:
   defaultUser:
     enabled: true
     username: admin
     password: admin
-  resources:
-    requests:
-      cpu: 200m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
   nodeSelector:
     kubernetes.io/hostname: airflow
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1.5Gi
 
 scheduler:
   nodeSelector:
     kubernetes.io/hostname: airflow
   resources:
     requests:
-      cpu: 200m
-      memory: 256Mi
-    limits:
       cpu: 500m
       memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
 
 triggerer:
   nodeSelector:
     kubernetes.io/hostname: airflow
   resources:
     requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 250m
+      cpu: 200m
       memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
-workers:  # <- nome correto aqui!
+workers:
   nodeSelector:
     kubernetes.io/hostname: airflow
   resources:
     requests:
-      cpu: 300m
+      cpu: 500m
       memory: 512Mi
     limits:
-      cpu: 600m
+      cpu: 1
       memory: 1Gi
+  autoscaling:
+    enabled: false  # habilite se quiser HPA depois
