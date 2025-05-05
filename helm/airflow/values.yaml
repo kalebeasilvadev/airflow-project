@@ -31,8 +31,12 @@ airflow:
 
 logs:
   persistence:
-    enabled: true
-    size: 1Gi
+    enabled: false
+
+postgresql:
+  primary:
+    persistence:
+      enabled: false
 
 webserver:
   defaultUser:
