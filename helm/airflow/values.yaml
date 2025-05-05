@@ -79,7 +79,7 @@ triggerer:
       cpu: 250m
       memory: 256Mi
 
-worker:
+workers:  # <- nome correto aqui!
   nodeSelector:
     kubernetes.io/hostname: airflow
   resources:
