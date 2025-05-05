@@ -9,22 +9,18 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout
+      - name: Checkout do código
         uses: actions/checkout@v3
 
-      - name: Set KUBECONFIG
+      - name: Definir KUBECONFIG
         run: echo "KUBECONFIG=/home/master/.kube/config" >> $GITHUB_ENV
 
-      - name: Set Helm context
-        run: |
-          kubectl config use-context airflow
-
-      - name: Add Apache Airflow Helm repo
+      - name: Adicionar repositório Helm do Apache Airflow
         run: |
           helm repo add apache-airflow https://airflow.apache.org
           helm repo update
 
-      - name: Try Helm upgrade (or fallback to clean install)
+      - name: Executar Helm upgrade (ou fallback para instalação limpa)
         run: |
           set -e
           echo "▶ Tentando upgrade..."
@@ -41,6 +37,6 @@ jobs:
                 -f ./helm/airflow/values.yaml
           fi
 
-      - name: Verificar pods
+      - name: Verificar status dos pods
         run: |
           kubectl get pods -n airflow
