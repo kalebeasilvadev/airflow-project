@@ -39,22 +39,18 @@ webserver:
   defaultUser:
     enabled: true
     username: admin
-    password: admin  # Altere para segredo via Secret em produção
+    password: admin
+  nodeSelector:
+    kubernetes.io/hostname: airflow
 
-# 🔽 Node selector aplicado a todos os componentes
-nodeSelector:
-  kubernetes.io/hostname: airflow
+scheduler:
+  nodeSelector:
+    kubernetes.io/hostname: airflow
 
-# 🔽 Se quiser aplicar por componente individual:
- webserver:
-   nodeSelector:
-     kubernetes.io/hostname: airflow
- scheduler:
-   nodeSelector:
-     kubernetes.io/hostname: airflow
- triggerer:
-   nodeSelector:
-     kubernetes.io/hostname: airflow
- worker:
-   nodeSelector:
-     kubernetes.io/hostname: airflow
+triggerer:
+  nodeSelector:
+    kubernetes.io/hostname: airflow
+
+worker:
+  nodeSelector:
+    kubernetes.io/hostname: airflow
