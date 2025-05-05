@@ -34,23 +34,58 @@ postgresql:
   primary:
     persistence:
       enabled: true
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
 
 webserver:
   defaultUser:
     enabled: true
     username: admin
     password: admin
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   nodeSelector:
     kubernetes.io/hostname: airflow
 
 scheduler:
   nodeSelector:
     kubernetes.io/hostname: airflow
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
 triggerer:
   nodeSelector:
     kubernetes.io/hostname: airflow
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
 
 worker:
   nodeSelector:
     kubernetes.io/hostname: airflow
+  resources:
+    requests:
+      cpu: 300m
+      memory: 512Mi
+    limits:
+      cpu: 600m
+      memory: 1Gi
