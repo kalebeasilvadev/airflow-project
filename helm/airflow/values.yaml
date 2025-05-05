@@ -32,15 +32,19 @@ logs:
 
 postgresql:
   primary:
-    persistence:
-      enabled: true
-    resources:
-      limits:
-        cpu: 500m
-        memory: 512Mi
-      requests:
-        cpu: 250m
-        memory: 256Mi
+    containerSecurityContext:
+      allowedCapabilities: []
+      runAsNonRoot: true
+      runAsUser: 1001
+      seccompProfile:
+        type: RuntimeDefault
+      # ⬇️ Aqui você limita o número de CPUs visíveis
+      capabilities:
+        drop: ["ALL"]
+    extraEnvVars:
+      - name: GOMAXPROCS
+        value: "1"
+
 
 webserver:
   defaultUser:
