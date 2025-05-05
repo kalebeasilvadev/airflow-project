@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # usa o runner local no master
+    runs-on: self-hosted
 
     steps:
       - name: Checkout
@@ -14,8 +14,7 @@ jobs:
 
       - name: Set KUBECONFIG environment variable
         run: |
-          echo "KUBECONFIG=/etc/rancher/rke2/rke2.yaml" >> $GITHUB_ENV
-
+          echo "KUBECONFIG=/home/master/.kube/config" >> $GITHUB_ENV
 
       - name: Verify access to cluster
         run: |
