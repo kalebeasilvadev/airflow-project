@@ -23,7 +23,7 @@ jobs:
 
       - name: Set up kubeconfig
         run: |
-          export KUBECONFIG=~/.kube/config  # ou o caminho certo para seu cluster
+          export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
 
       - name: Deploy Airflow
         run: |
