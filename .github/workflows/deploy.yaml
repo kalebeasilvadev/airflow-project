@@ -6,18 +6,24 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # 👈 troca aqui para rodar no runner local
+    runs-on: self-hosted
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Ensure unzip is installed
+        run: |
+          if ! command -v unzip &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y unzip
+          fi
 
       - name: Install Helm
         uses: azure/setup-helm@v3
 
       - name: Set up kubeconfig
         run: |
-          export KUBECONFIG=~/.kube/config  # ou onde estiver o kubeconfig local
+          export KUBECONFIG=~/.kube/config  # ou o caminho certo para seu cluster
 
       - name: Deploy Airflow
         run: |
@@ -25,3 +31,4 @@ jobs:
             --namespace airflow \
             --create-namespace \
             -f ./helm/airflow/values.yaml
+
