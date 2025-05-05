@@ -6,24 +6,22 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: self-hosted  # usa o runner local no master
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Ensure unzip is installed
+      - name: Set KUBECONFIG environment variable
         run: |
-          if ! command -v unzip &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y unzip
-          fi
+          echo "KUBECONFIG=/etc/rancher/rke2/rke2.yaml" >> $GITHUB_ENV
+
+      - name: Verify access to cluster
+        run: |
+          kubectl get nodes
 
       - name: Install Helm
         uses: azure/setup-helm@v3
-
-      - name: Set up kubeconfig
-        run: |
-          export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
 
       - name: Deploy Airflow
         run: |
@@ -31,4 +29,3 @@ jobs:
             --namespace airflow \
             --create-namespace \
             -f ./helm/airflow/values.yaml
-
