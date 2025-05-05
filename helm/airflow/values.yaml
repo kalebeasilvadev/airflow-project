@@ -32,18 +32,31 @@ logs:
 
 postgresql:
   primary:
+    persistence:
+      enabled: true
+    resources:
+      requests:
+        cpu: 250m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
     containerSecurityContext:
-      allowedCapabilities: []
-      runAsNonRoot: true
       runAsUser: 1001
+      runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
-      # ⬇️ Aqui você limita o número de CPUs visíveis
-      capabilities:
-        drop: ["ALL"]
+
+    # ⚠️ Impede que o PostgreSQL veja todos os CPUs
+    extraFlags:
+      - "--cpu=0.5"
+
+    # 🔽 alternativo: usar cpulimit na entrada (gambiarra mais forte)
     extraEnvVars:
-      - name: GOMAXPROCS
-        value: "1"
+      - name: PG_CPU_LIMIT
+        value: "0.5"
+
 
 
 webserver:
