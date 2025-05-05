@@ -22,21 +22,18 @@ airflow:
     AIRFLOW__KUBERNETES__WORKER_CONTAINER_TAG: 2.9.1-python3.11
 
   extraPipPackages: |
-    apache-airflow-providers-google
-    apache-airflow-providers-amazon
     apache-airflow-providers-postgres
-    apache-airflow-providers-http
     pandas
     requests
 
 logs:
   persistence:
-    enabled: false
+    enabled: true
 
 postgresql:
   primary:
     persistence:
-      enabled: false
+      enabled: true
 
 webserver:
   defaultUser:
