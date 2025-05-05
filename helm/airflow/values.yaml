@@ -26,10 +26,6 @@ airflow:
     pandas
     requests
 
-logs:
-  persistence:
-    enabled: true
-
 postgresql:
   primary:
     persistence:
