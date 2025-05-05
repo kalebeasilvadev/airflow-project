@@ -6,32 +6,41 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Executa no runner local já configurado
+    runs-on: self-hosted
 
     steps:
-      - name: Checkout do código
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Definir variável de ambiente do kubeconfig
-        run: |
-          echo "KUBECONFIG=/home/master/.kube/config" >> $GITHUB_ENV
+      - name: Set KUBECONFIG
+        run: echo "KUBECONFIG=/home/master/.kube/config" >> $GITHUB_ENV
 
-      - name: Verificar acesso ao cluster
+      - name: Set Helm context
         run: |
-          kubectl get nodes
+          kubectl config use-context airflow
 
-      - name: Adicionar repositório Helm do Apache Airflow
+      - name: Add Apache Airflow Helm repo
         run: |
           helm repo add apache-airflow https://airflow.apache.org
           helm repo update
 
-      - name: Deploy do Airflow com Helm
+      - name: Try Helm upgrade (or fallback to clean install)
         run: |
-          helm upgrade --install airflow apache-airflow/airflow \
+          set -e
+          echo "▶ Tentando upgrade..."
+          if ! helm upgrade --install airflow apache-airflow/airflow \
             --namespace airflow \
             --create-namespace \
-            -f ./helm/airflow/values.yaml
+            -f ./helm/airflow/values.yaml; then
+              echo "⚠️ Helm upgrade falhou. Recriando..."
+              helm uninstall airflow -n airflow || true
+              kubectl delete pvc -l release=airflow -n airflow || true
+              helm install airflow apache-airflow/airflow \
+                --namespace airflow \
+                --create-namespace \
+                -f ./helm/airflow/values.yaml
+          fi
 
-      - name: Verificar pods após deploy
+      - name: Verificar pods
         run: |
           kubectl get pods -n airflow
