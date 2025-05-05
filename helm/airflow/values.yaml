@@ -12,7 +12,6 @@ dags:
     repo: https://github.com/kalebeasilvadev/airflow-project.git
     branch: main
     subPath: dags
-    syncWait: 60
     depth: 1
 
 airflow:
