@@ -1,0 +1,27 @@
+name: Deploy Airflow
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # 👈 troca aqui para rodar no runner local
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+
+      - name: Set up kubeconfig
+        run: |
+          export KUBECONFIG=~/.kube/config  # ou onde estiver o kubeconfig local
+
+      - name: Deploy Airflow
+        run: |
+          helm upgrade --install airflow ./helm/airflow \
+            --namespace airflow \
+            --create-namespace \
+            -f ./helm/airflow/values.yaml
