@@ -17,14 +17,20 @@ jobs:
 
       - name: Adicionar repositório Helm do Apache Airflow
         run: |
-          helm repo add apache-airflow https://airflow.apache.org
+          helm repo add apache-airflow https://airflow.apache.org || true
           helm repo update
+
+      - name: Verificar conteúdo do values.yaml (debug)
+        run: |
+          echo "==> Verificando ./helm/airflow/values.yaml"
+          test -f ./helm/airflow/values.yaml && cat ./helm/airflow/values.yaml || (echo "Arquivo não encontrado!" && exit 1)
 
       - name: Executar Helm upgrade (ou fallback para instalação limpa)
         run: |
           set -e
           echo "▶ Tentando upgrade..."
           if ! helm upgrade --install airflow apache-airflow/airflow \
+            --version 1.13.0 \
             --namespace airflow \
             --create-namespace \
             -f ./helm/airflow/values.yaml; then
@@ -32,6 +38,7 @@ jobs:
               helm uninstall airflow -n airflow || true
               kubectl delete pvc -l release=airflow -n airflow || true
               helm install airflow apache-airflow/airflow \
+                --version 1.13.0 \
                 --namespace airflow \
                 --create-namespace \
                 -f ./helm/airflow/values.yaml
@@ -39,4 +46,4 @@ jobs:
 
       - name: Verificar status dos pods
         run: |
-          kubectl get pods -n airflow
+          kubectl get pods -n airflow -o wide
