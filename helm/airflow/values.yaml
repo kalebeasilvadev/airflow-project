@@ -1,8 +1,9 @@
 executor: KubernetesExecutor
 
 config:
-  existingAirflowCfgConfigMap: airflow-config-custom
-  airflowCfgPath: /opt/airflow/config/airflow.cfg
+  existingAirflowCfgConfigMap:
+    name: airflow-config-custom
+    key: airflow.cfg
 
 
 images:
