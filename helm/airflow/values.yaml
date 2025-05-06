@@ -98,8 +98,6 @@ ingress:
     annotations:
       kubernetes.io/ingress.class: traefik
     ingressClassName: traefik
-    hosts:
-      - /
     tls:
       enabled: false
 
