@@ -109,7 +109,5 @@ logs:
   persistence:
     enabled: true
     size: 1Gi
-    accessModes:
-      - ReadWriteMany
-    storageClassName: ""
+
 
