@@ -12,8 +12,11 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v3
 
-      - name: Definir KUBECONFIG
-        run: echo "KUBECONFIG=/home/master/.kube/config" >> $GITHUB_ENV
+      - name: Restaurar kubeconfig via secret
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 -d > ~/.kube/config
+          echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
       - name: Adicionar repositório Helm do Apache Airflow
         run: |
