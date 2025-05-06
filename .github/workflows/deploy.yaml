@@ -18,12 +18,13 @@ jobs:
           echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 -d > ~/.kube/config
           echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
-      - name: Instalar yq (caso necessário)
+      - name: Instalar yq local (caso necessário)
         run: |
           if ! command -v yq &> /dev/null; then
-            echo "Instalando yq..."
-            sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
-            sudo chmod +x /usr/bin/yq
+            echo "Instalando yq local..."
+            curl -L https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o ./yq
+            chmod +x ./yq
+            echo "$(pwd)" >> $GITHUB_PATH
           fi
 
       - name: Atualizar airflow.extraPipPackages com requirements.txt
@@ -33,7 +34,7 @@ jobs:
           echo "  extraPipPackages: |" >> airflow-temp.yaml
           sed 's/^/    /' requirements.txt >> airflow-temp.yaml
 
-          yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' ./helm/airflow/values.yaml airflow-temp.yaml > ./helm/airflow/values.final.yaml
+          ./yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' ./helm/airflow/values.yaml airflow-temp.yaml > ./helm/airflow/values.final.yaml
           mv ./helm/airflow/values.final.yaml ./helm/airflow/values.yaml
 
       - name: Adicionar repositório Helm do Apache Airflow
