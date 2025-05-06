@@ -18,15 +18,28 @@ jobs:
           echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 -d > ~/.kube/config
           echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
+      - name: Instalar yq (caso necessário)
+        run: |
+          if ! command -v yq &> /dev/null; then
+            echo "Instalando yq..."
+            sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+            sudo chmod +x /usr/bin/yq
+          fi
+
+      - name: Atualizar airflow.extraPipPackages com requirements.txt
+        run: |
+          echo "🔄 Gerando bloco extraPipPackages com requirements.txt"
+          echo "airflow:" > airflow-temp.yaml
+          echo "  extraPipPackages: |" >> airflow-temp.yaml
+          sed 's/^/    /' requirements.txt >> airflow-temp.yaml
+
+          yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' ./helm/airflow/values.yaml airflow-temp.yaml > ./helm/airflow/values.final.yaml
+          mv ./helm/airflow/values.final.yaml ./helm/airflow/values.yaml
+
       - name: Adicionar repositório Helm do Apache Airflow
         run: |
           helm repo add apache-airflow https://airflow.apache.org || true
           helm repo update
-
-      - name: Verificar conteúdo do values.yaml (debug)
-        run: |
-          echo "==> Verificando ./helm/airflow/values.yaml"
-          test -f ./helm/airflow/values.yaml && cat ./helm/airflow/values.yaml || (echo "Arquivo não encontrado!" && exit 1)
 
       - name: Executar Helm upgrade (ou fallback para instalação limpa)
         run: |
