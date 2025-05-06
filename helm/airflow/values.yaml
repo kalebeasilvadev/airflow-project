@@ -90,3 +90,15 @@ workers:
     limits:
       cpu: 1
       memory: 1Gi
+
+ingress:
+  enabled: true
+  web:
+    annotations:
+      kubernetes.io/ingress.class: traefik
+    hosts:
+      - host: airflow.local
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
