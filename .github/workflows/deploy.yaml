@@ -37,16 +37,17 @@ jobs:
           ./yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' ./helm/airflow/values.yaml airflow-temp.yaml > ./helm/airflow/values.final.yaml
           mv ./helm/airflow/values.final.yaml ./helm/airflow/values.yaml
 
-      - name: Criar PVC airflow-logs se não existir
+      - name: 📦 Garantir PVC airflow-logs
         run: |
-          echo "📦 Verificando se PVC airflow-logs existe..."
-          if ! kubectl get pvc airflow-logs -n airflow --insecure-skip-tls-verify > /dev/null 2>&1; then
-            echo "✅ PVC não existe, criando..."
-            kubectl apply -f ./helm/airflow/airflow-logs-pvc.yaml --insecure-skip-tls-verify
-          else
-            echo "✅ PVC já existe, nada a fazer."
-          fi
-          
+          echo "📦 Aplicando PVC airflow-logs"
+          kubectl apply -f ./helm/airflow/airflow-logs-pvc.yaml --insecure-skip-tls-verify
+
+      - name: ⏱️ Esperar PVC estar disponível
+        run: |
+          echo "⏱️ Aguardando o PVC airflow-logs estar Bound"
+          kubectl wait --for=condition=Bound pvc/airflow-logs \
+            --timeout=60s -n airflow --insecure-skip-tls-verify || \
+            echo "⚠️ Timeout ao esperar PVC ficar Bound. Verifique se o storage class está funcionando."
 
       - name: Criar configMap com airflow.cfg personalizado
         run: |
