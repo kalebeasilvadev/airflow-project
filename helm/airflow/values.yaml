@@ -99,7 +99,7 @@ ingress:
       kubernetes.io/ingress.class: traefik
     ingressClassName: traefik
     hosts:
-      - airflow.local
+      - airflow.lan
     tls:
       enabled: false
 
