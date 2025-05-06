@@ -108,6 +108,8 @@ ingress:
 logs:
   persistence:
     enabled: true
-    size: 1Gi
+    existingClaim: airflow-logs
+
+
 
 
