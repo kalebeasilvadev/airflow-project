@@ -37,10 +37,16 @@ jobs:
           ./yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' ./helm/airflow/values.yaml airflow-temp.yaml > ./helm/airflow/values.final.yaml
           mv ./helm/airflow/values.final.yaml ./helm/airflow/values.yaml
 
-      - name: Criar PVC para logs do Airflow
+      - name: Criar PVC airflow-logs se não existir
         run: |
-          echo "📦 Garantindo PVC airflow-logs"
-          kubectl apply -f ./helm/airflow/airflow-logs-pvc.yaml --insecure-skip-tls-verify
+          echo "📦 Verificando se PVC airflow-logs existe..."
+          if ! kubectl get pvc airflow-logs -n airflow --insecure-skip-tls-verify > /dev/null 2>&1; then
+            echo "✅ PVC não existe, criando..."
+            kubectl apply -f ./helm/airflow/airflow-logs-pvc.yaml --insecure-skip-tls-verify
+          else
+            echo "✅ PVC já existe, nada a fazer."
+          fi
+          
 
       - name: Criar configMap com airflow.cfg personalizado
         run: |
