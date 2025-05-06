@@ -1,5 +1,9 @@
 executor: KubernetesExecutor
 
+config:
+  configMap: airflow-config-custom
+
+
 images:
   airflow:
     repository: apache/airflow
@@ -101,3 +105,11 @@ ingress:
     tls:
       enabled: false
 
+
+logs:
+  persistence:
+    enabled: true
+    existingClaim: ""
+    storageClassName: ""
+    accessMode: ReadWriteMany
+    size: 2Gi
