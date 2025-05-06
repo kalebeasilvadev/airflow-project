@@ -33,7 +33,6 @@ jobs:
           set -e
           echo "▶ Tentando upgrade..."
           if ! helm upgrade --install airflow apache-airflow/airflow \
-            --version 1.13.0 \
             --namespace airflow \
             --create-namespace \
             -f ./helm/airflow/values.yaml \
