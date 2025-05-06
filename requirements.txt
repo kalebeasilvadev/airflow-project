@@ -1,4 +1,4 @@
 apache-airflow==2.9.1
 pandas
 requests
-apache-airflow-providers-cncf-kubernetes-10.4.3
+apache-airflow-providers-cncf-kubernetes==9.0.0
