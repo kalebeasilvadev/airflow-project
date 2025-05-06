@@ -42,12 +42,21 @@ jobs:
           echo "📦 Aplicando PVC airflow-logs"
           kubectl apply -f ./helm/airflow/airflow-logs-pvc.yaml --insecure-skip-tls-verify
 
-      - name: ⏱️ Esperar PVC estar disponível
+      - name: ⏱️ Aguardar PVC airflow-logs ficar Bound
         run: |
-          echo "⏱️ Aguardando o PVC airflow-logs estar Bound"
-          kubectl wait --for=condition=Bound pvc/airflow-logs \
-            --timeout=60s -n airflow --insecure-skip-tls-verify || \
-            echo "⚠️ Timeout ao esperar PVC ficar Bound. Verifique se o storage class está funcionando."
+          echo "⏱️ Aguardando PVC airflow-logs ficar Bound..."
+          for i in {1..36}; do
+            STATUS=$(kubectl get pvc airflow-logs -n airflow -o jsonpath='{.status.phase}' --insecure-skip-tls-verify)
+            echo "Tentativa $i: status=$STATUS"
+            if [ "$STATUS" == "Bound" ]; then
+              echo "✅ PVC airflow-logs está Bound"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "⚠️ Timeout: PVC airflow-logs não ficou Bound após 180s"
+          exit 1
+      
 
       - name: Criar configMap com airflow.cfg personalizado
         run: |
