@@ -34,9 +34,7 @@ airflow:
 logs:
   persistence:
     enabled: true
-    size: 4Gi
-    storageClassName: local-path
-    accessMode: ReadWriteOnce
+    existingClaim: airflow-logs
 
 webserver:
   defaultUser:
