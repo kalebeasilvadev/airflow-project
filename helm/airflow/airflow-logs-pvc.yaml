@@ -8,5 +8,9 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 4Gi
+      storage: 1Gi
   storageClassName: local-path-immediate
+  volumeMode: Filesystem
+  selector:
+    matchLabels:
+      kubernetes.io/hostname: airflow
