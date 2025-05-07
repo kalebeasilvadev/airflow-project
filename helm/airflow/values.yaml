@@ -123,17 +123,6 @@ workers:
 postgresql:
   enabled: true
   primary:
-    nodeSelector:
-      kubernetes.io/hostname: airflow
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: kubernetes.io/hostname
-                  operator: In
-                  values:
-                    - airflow
     persistence:
       enabled: true
     resources:
