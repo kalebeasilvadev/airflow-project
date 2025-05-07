@@ -37,6 +37,20 @@ jobs:
           ./yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' ./helm/airflow/values.yaml airflow-temp.yaml > ./helm/airflow/values.final.yaml
           mv ./helm/airflow/values.final.yaml ./helm/airflow/values.yaml
 
+      - name: 📦 Criar StorageClass local-path-immediate (se não existir)
+        run: |
+          echo "📦 Garantindo StorageClass local-path-immediate"
+          kubectl get storageclass local-path-immediate --ignore-not-found || \
+          kubectl apply -f - <<EOF
+              apiVersion: storage.k8s.io/v1
+              kind: StorageClass
+              metadata:
+                name: local-path-immediate
+              provisioner: rancher.io/local-path
+              reclaimPolicy: Delete
+              volumeBindingMode: Immediate
+              EOF
+
       - name: 📦 Garantir PVC airflow-logs
         run: |
           echo "📦 Aplicando PVC airflow-logs"
