@@ -5,7 +5,6 @@ config:
     name: airflow-config-custom
     key: airflow.cfg
 
-
 images:
   airflow:
     repository: apache/airflow
@@ -24,16 +23,117 @@ airflow:
   config:
     AIRFLOW__KUBERNETES__DELETE_WORKER_PODS: "True"
     AIRFLOW__KUBERNETES__NAMESPACE: "airflow"
-    AIRFLOW__KUBERNETES__WORKER_CONTAINER_TAG: 3.0.0-python3.11
     AIRFLOW__KUBERNETES__WORKER_CONTAINER_REPOSITORY: apache/airflow
+    AIRFLOW__KUBERNETES__WORKER_CONTAINER_TAG: 3.0.0-python3.11
 
   extraPipPackages: |
     apache-airflow-providers-postgres
     pandas
     requests
 
+logs:
+  persistence:
+    enabled: true
+    existingClaim: airflow-logs
+
+webserver:
+  defaultUser:
+    enabled: true
+    username: admin
+    password: admin
+  nodeSelector:
+    kubernetes.io/hostname: airflow
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                  - airflow
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1.5Gi
+
+scheduler:
+  nodeSelector:
+    kubernetes.io/hostname: airflow
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                  - airflow
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+
+triggerer:
+  nodeSelector:
+    kubernetes.io/hostname: airflow
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                  - airflow
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+workers:
+  nodeSelector:
+    kubernetes.io/hostname: airflow
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                  - airflow
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+
 postgresql:
+  enabled: true
   primary:
+    nodeSelector:
+      kubernetes.io/hostname: airflow
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - airflow
     persistence:
       enabled: true
     resources:
@@ -49,53 +149,18 @@ postgresql:
       seccompProfile:
         type: RuntimeDefault
 
-webserver:
-  defaultUser:
-    enabled: true
-    username: admin
-    password: admin
+statsd:
   nodeSelector:
     kubernetes.io/hostname: airflow
-  resources:
-    requests:
-      cpu: 500m
-      memory: 512Mi
-    limits:
-      cpu: 1
-      memory: 1.5Gi
-
-scheduler:
-  nodeSelector:
-    kubernetes.io/hostname: airflow
-  resources:
-    requests:
-      cpu: 500m
-      memory: 512Mi
-    limits:
-      cpu: 1
-      memory: 1Gi
-
-triggerer:
-  nodeSelector:
-    kubernetes.io/hostname: airflow
-  resources:
-    requests:
-      cpu: 200m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
-
-workers:
-  nodeSelector:
-    kubernetes.io/hostname: airflow
-  resources:
-    requests:
-      cpu: 500m
-      memory: 512Mi
-    limits:
-      cpu: 1
-      memory: 1Gi
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                  - airflow
 
 ingress:
   enabled: true
@@ -106,11 +171,3 @@ ingress:
     ingressClassName: traefik
     tls:
       enabled: false
-
-logs:
-  persistence:
-    enabled: true
-    size: 4Gi
-    storageClassName: local-path-immediate
-
-
