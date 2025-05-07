@@ -110,4 +110,8 @@ ingress:
 logs:
   persistence:
     enabled: true
-    existingClaim: airflow-logs
+    size: 1Gi
+    accessMode: ReadWriteOnce
+    storageClassName: local-path-immediate
+
+

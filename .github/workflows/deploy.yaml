@@ -37,26 +37,6 @@ jobs:
           ./yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' ./helm/airflow/values.yaml airflow-temp.yaml > ./helm/airflow/values.final.yaml
           mv ./helm/airflow/values.final.yaml ./helm/airflow/values.yaml
 
-      - name: 📦 Garantir PVC airflow-logs
-        run: |
-          echo "📦 Aplicando PVC airflow-logs"
-          kubectl apply -f ./helm/airflow/airflow-logs-pvc.yaml --insecure-skip-tls-verify
-
-      - name: ⏱️ Aguardar PVC airflow-logs ficar Bound
-        run: |
-          echo "⏱️ Aguardando PVC airflow-logs ficar Bound..."
-          for i in {1..36}; do
-            STATUS=$(kubectl get pvc airflow-logs -n airflow -o jsonpath='{.status.phase}' --insecure-skip-tls-verify)
-            echo "Tentativa $i: status=$STATUS"
-            if [ "$STATUS" == "Bound" ]; then
-              echo "✅ PVC airflow-logs está Bound"
-              exit 0
-            fi
-            sleep 5
-          done
-          echo "⚠️ Timeout: PVC airflow-logs não ficou Bound após 180s"
-          exit 1
-
       - name: Criar configMap com airflow.cfg personalizado
         run: |
           echo "📦 Criando configMap com airflow.cfg"
