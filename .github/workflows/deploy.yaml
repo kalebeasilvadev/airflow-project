@@ -84,7 +84,7 @@ jobs:
               helm uninstall airflow -n airflow || true
               kubectl delete pvc -l release=airflow -n airflow --insecure-skip-tls-verify || true
               helm install airflow apache-airflow/airflow \
-                --version 1.13.0 \
+                --version 1.15.0 \
                 --namespace airflow \
                 --create-namespace \
                 -f ./helm/airflow/values.yaml \
