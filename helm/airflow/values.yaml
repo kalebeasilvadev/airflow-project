@@ -1,15 +1,9 @@
 executor: KubernetesExecutor
 
-config:
-  existingAirflowCfgConfigMap:
-    name: airflow-config-custom
-    key: airflow.cfg
-
-
 images:
   airflow:
     repository: apache/airflow
-    tag: 2.9.1-python3.11
+    tag: 2.10.5
     pullPolicy: IfNotPresent
 
 dags:
@@ -25,7 +19,7 @@ airflow:
     AIRFLOW__KUBERNETES__DELETE_WORKER_PODS: "True"
     AIRFLOW__KUBERNETES__NAMESPACE: "airflow"
     AIRFLOW__KUBERNETES__WORKER_CONTAINER_REPOSITORY: apache/airflow
-    AIRFLOW__KUBERNETES__WORKER_CONTAINER_TAG: 2.9.1-python3.11
+    AIRFLOW__KUBERNETES__WORKER_CONTAINER_TAG: 2.10.5
 
   extraPipPackages: |
     apache-airflow-providers-postgres
