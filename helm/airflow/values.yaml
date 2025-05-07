@@ -110,8 +110,7 @@ ingress:
 logs:
   persistence:
     enabled: true
-    size: 1Gi
-    accessMode: ReadWriteOnce
+    size: 4Gi
     storageClassName: local-path-immediate
 
 
