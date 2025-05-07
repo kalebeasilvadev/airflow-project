@@ -40,7 +40,22 @@ jobs:
       - name: 📦 Garantir PVC airflow-logs
         run: |
           echo "📦 Aplicando PVC airflow-logs"
-          kubectl apply -f ./helm/airflow/airflow-logs-pvc.yaml --insecure-skip-tls-verify     
+          kubectl apply -f ./helm/airflow/airflow-logs-pvc.yaml --insecure-skip-tls-verify
+
+      - name: ⏱️ Aguardar PVC airflow-logs ficar Bound
+        run: |
+          echo "⏱️ Aguardando PVC airflow-logs ficar Bound..."
+          for i in {1..36}; do
+            STATUS=$(kubectl get pvc airflow-logs -n airflow -o jsonpath='{.status.phase}' --insecure-skip-tls-verify)
+            echo "Tentativa $i: status=$STATUS"
+            if [ "$STATUS" == "Bound" ]; then
+              echo "✅ PVC airflow-logs está Bound"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "⚠️ Timeout: PVC airflow-logs não ficou Bound após 180s"
+          exit 1
 
       - name: Criar configMap com airflow.cfg personalizado
         run: |
@@ -68,7 +83,7 @@ jobs:
               helm uninstall airflow -n airflow || true
               kubectl delete pvc -l release=airflow -n airflow --insecure-skip-tls-verify || true
               helm install airflow apache-airflow/airflow \
-                --version 2.7.0  \
+                --version 2.7.0 \
                 --namespace airflow \
                 --create-namespace \
                 -f ./helm/airflow/values.yaml \
