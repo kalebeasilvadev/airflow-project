@@ -12,12 +12,10 @@ with DAG(
 
     test_task = KubernetesPodOperator(
         task_id="run_test_pod",
+        name="airflow-test",
         namespace="airflow",
-        image="alpine",
-        cmds=["bash", "-c"],
-        arguments=["echo '[base] Hello and wait a bit' && sleep 5"],
-        name="test-pod",
+        image="busybox",
+        cmds=["sh", "-c", "echo 'Hello and wait a bit'; sleep 5"],
         get_logs=True,
-        is_delete_operator_pod=True,
+        is_delete_operator_pod=True,  # Deleta após capturar logs
     )
-
