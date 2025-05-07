@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
+from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
 from datetime import datetime
 
 with DAG(
@@ -19,4 +19,3 @@ with DAG(
         get_logs=True,
         is_delete_operator_pod=True,  # Deleta após capturar logs
     )
-
