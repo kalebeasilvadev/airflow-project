@@ -37,14 +37,6 @@ jobs:
           ./yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' ./helm/airflow/values.yaml airflow-temp.yaml > ./helm/airflow/values.final.yaml
           mv ./helm/airflow/values.final.yaml ./helm/airflow/values.yaml
 
-      - name: Criar configMap com airflow.cfg personalizado
-        run: |
-          echo "📦 Criando configMap com airflow.cfg"
-          kubectl create configmap airflow-config-custom \
-            --from-file=airflow.cfg=./helm/airflow/config/airflow.cfg \
-            --namespace airflow \
-            --dry-run=client -o yaml | kubectl apply -f - --insecure-skip-tls-verify
-
       - name: Adicionar repositório Helm do Apache Airflow
         run: |
           helm repo add apache-airflow https://airflow.apache.org || true

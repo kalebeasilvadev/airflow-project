@@ -1,10 +1,5 @@
 executor: KubernetesExecutor
 
-config:
-  existingAirflowCfgConfigMap:
-    name: airflow-config-custom
-    key: airflow.cfg
-
 images:
   airflow:
     repository: apache/airflow
