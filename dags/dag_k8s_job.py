@@ -3,11 +3,11 @@ from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperato
 from datetime import datetime
 
 with DAG(
-    dag_id='test_pod_operator',
+    dag_id="test_pod_operator",
     start_date=datetime(2024, 1, 1),
     schedule_interval=None,
     catchup=False,
-    tags=['k8s'],
+    tags=["k8s"],
 ) as dag:
 
     test_task = KubernetesPodOperator(

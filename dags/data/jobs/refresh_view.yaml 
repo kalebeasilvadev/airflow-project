@@ -1,0 +1,17 @@
+dag_id: refresh_view
+enabled: true
+schedule_interval: "0 3 * * *"
+namespace: "airflow"
+image: "airflow_var:REGISTRY_URL/grupo/projeto/image-refresh-view:latest"
+image_pull_secrets: "gitlab-registry-secret"
+resources:
+  request_memory: "512Mi"
+  request_cpu: "500m"
+  limit_memory: "1Gi"
+  limit_cpu: "1000m"
+env_vars:
+  POSTGRES_DB: "airflow_var:POSTGRES_DB"
+  POSTGRES_USER: "airflow_var:POSTGRES_USER"
+  POSTGRES_PASSWORD: "airflow_var:POSTGRES_PASSWORD"
+  POSTGRES_HOST: "airflow_var:POSTGRES_HOST"
+  POSTGRES_PORT: "airflow_var:POSTGRES_PORT"
