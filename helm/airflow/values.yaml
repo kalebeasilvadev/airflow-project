@@ -12,7 +12,10 @@ dags:
     repo: https://github.com/kalebeasilvadev/airflow-project.git
     branch: main
     depth: 1
+    root: /opt/airflow/dags
+    dest: .
     wait: 15
+
 
 airflow:
   config:
