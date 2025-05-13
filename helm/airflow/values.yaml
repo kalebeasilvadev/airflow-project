@@ -5,6 +5,8 @@ images:
     repository: apache/airflow
     tag: 2.10.5
     pullPolicy: IfNotPresent
+    imagePullSecrets:
+      - name: gitlab-registry-secret
 
 dags:
   gitSync:

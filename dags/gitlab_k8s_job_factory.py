@@ -113,4 +113,8 @@ def create_dag(config):
 # 🏭 Factory → cria todas as DAGs dinamicamente
 for job_config in load_yaml_configs(DATA_PATH):
     dag_id = job_config["dag_id"]
-    globals()[dag_id] = create_dag(job_config)
+    try:
+        globals()[dag_id] = create_dag(job_config)
+    except Exception as e:
+        print(f"❌ Erro ao criar DAG {dag_id}: {e}")
+
