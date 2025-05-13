@@ -5,9 +5,13 @@ from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperato
 from airflow.utils.dates import days_ago
 from airflow.models import Variable
 from datetime import timedelta
+from airflow.utils.log.logging_mixin import LoggingMixin
+
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data/jobs")
-
+log = LoggingMixin().log
+log.info(f"Pasta geral {os.path.dirname(__file__)}")
+log.info(f"Factory carregado. Arquivos em {DATA_PATH}: {os.listdir(DATA_PATH)}")
 
 def load_yaml_configs(path):
     jobs = []
