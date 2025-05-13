@@ -11,8 +11,8 @@ dags:
     enabled: true
     repo: https://github.com/kalebeasilvadev/airflow-project.git
     branch: main
-    subPath: dags
     depth: 1
+    wait: 15
 
 airflow:
   config:
