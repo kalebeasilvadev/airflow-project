@@ -12,6 +12,7 @@ dags:
     repo: https://github.com/kalebeasilvadev/airflow-project.git
     branch: main
     depth: 1
+    subPath: dags
     wait: 15
 
 
@@ -22,7 +23,6 @@ airflow:
     AIRFLOW__KUBERNETES__WORKER_CONTAINER_REPOSITORY: apache/airflow
     AIRFLOW__KUBERNETES__WORKER_CONTAINER_TAG: 2.10.5
     AIRFLOW__CORE__FERNET_KEY: "eZC4vkbQPBqwm3hVR5VNC_Jy0-8zz9tYSKn43aur6ds="
-    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags
 
   extraPipPackages: |
     apache-airflow-providers-postgres
