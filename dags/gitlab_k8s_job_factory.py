@@ -8,7 +8,7 @@ from datetime import timedelta
 from airflow.utils.log.logging_mixin import LoggingMixin
 
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), "")
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 log = LoggingMixin().log
 log.info(f"Pasta geral {os.path.dirname(__file__)}")
 log.info(f"Factory carregado. Arquivos em {DATA_PATH}: {os.listdir(DATA_PATH)}")
