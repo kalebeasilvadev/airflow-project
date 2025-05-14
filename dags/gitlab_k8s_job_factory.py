@@ -109,10 +109,13 @@ def create_dag(config):
 
     return dag
 
-for job_config in load_yaml_configs(DATA_PATH):
-    dag_id = job_config["dag_id"]
-    try:
-        globals()[dag_id] = create_dag(job_config)
-        log.info(f"✅ DAG {dag_id} criada com sucesso.")
-    except Exception as e:
-        log.error(f"❌ Erro ao criar DAG {dag_id}: {e}")
+def load_dags():
+    for job_config in load_yaml_configs(DATA_PATH):
+        dag_id = job_config["dag_id"]
+        try:
+            globals()[dag_id] = create_dag(job_config)
+            log.info(f"✅ DAG {dag_id} criada com sucesso.")
+        except Exception as e:
+            log.error(f"❌ Erro ao criar DAG {dag_id}: {e}")
+
+load_dags()
