@@ -3,7 +3,7 @@ from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperato
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 
-from kubernetes.client import V1ResourceRequirements
+from kubernetes.client import V1LocalObjectReference, V1ResourceRequirements
 
 container_resources = V1ResourceRequirements(
     limits={
@@ -35,7 +35,7 @@ with DAG(
         task_id="run_gitlab_pod",
         namespace="airflow",
         image="{{ var.value.REGISTRY_URL }}/clientes/cnv/extrata/services/job-refresh-view:r-1-0-0",
-        image_pull_secrets=[{"name": "gitlab-registry-secret"}],
+        image_pull_secrets=[V1LocalObjectReference(name="aws-registry-secret")],
         image_pull_policy="Always",
         name="pod-refresh_view",
         labels={"sidecar.istio.io/inject": "false"},

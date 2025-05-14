@@ -3,7 +3,7 @@ enabled: true
 schedule_interval: "0 3 * * *"
 namespace: "airflow"
 image: "airflow_var:REGISTRY_URL/clientes/cnv/extrata/services/job-refresh-view:r-1-0-0"
-image_pull_secrets: "gitlab-registry-secret"
+image_pull_secrets: "aws-registry-secret"
 resources:
   request_memory: "512Mi"
   request_cpu: "500m"

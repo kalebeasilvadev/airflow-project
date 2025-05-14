@@ -6,7 +6,7 @@ from airflow.utils.dates import days_ago
 from airflow.models import Variable
 from datetime import timedelta
 from airflow.utils.log.logging_mixin import LoggingMixin
-from kubernetes.client import V1ResourceRequirements
+from kubernetes.client import V1LocalObjectReference, V1ResourceRequirements
 
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
@@ -89,21 +89,31 @@ def create_dag(config):
     )
 
     with dag:
+        # container_resources = V1ResourceRequirements(
+        #     limits={
+        #         "memory": config["resources"]["limit_memory"],
+        #         "cpu": config["resources"]["limit_cpu"]
+        #     },
+        #     requests={
+        #         "memory": config["resources"]["request_memory"],
+        #         "cpu": config["resources"]["request_cpu"]
+        #     }
+        # )
         container_resources = V1ResourceRequirements(
             limits={
-                "memory": config["resources"]["limit_memory"],
-                "cpu": config["resources"]["limit_cpu"]
+                "memory": "1Gi",
+                "cpu": "1000m"
             },
             requests={
-                "memory": config["resources"]["request_memory"],
-                "cpu": config["resources"]["request_cpu"]
+                "memory": "512Mi",
+                "cpu": "500m"
             }
         )
         KubernetesPodOperator(
             task_id="run_gitlab_pod",
             namespace=config["namespace"],
             image=config["image"],
-            image_pull_secrets=[{"name": config["image_pull_secrets"]}],
+            image_pull_secrets=[V1LocalObjectReference(name="aws-registry-secret")],
             image_pull_policy="Always",
             name=f"pod-{config['dag_id']}",
             labels={"sidecar.istio.io/inject": "false"},
