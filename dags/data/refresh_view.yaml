@@ -2,7 +2,7 @@ dag_id: refresh_view
 enabled: true
 schedule_interval: "0 3 * * *"
 namespace: "airflow"
-image: "airflow_var:REGISTRY_URL/grupo/projeto/image-refresh-view:latest"
+image: "airflow_var:REGISTRY_URL/clientes/cnv/extrata/services/job-refresh-view:r-1-0-0"
 image_pull_secrets: "gitlab-registry-secret"
 resources:
   request_memory: "512Mi"

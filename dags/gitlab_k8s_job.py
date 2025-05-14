@@ -34,7 +34,7 @@ with DAG(
     KubernetesPodOperator(
         task_id="run_gitlab_pod",
         namespace="airflow",
-        image="grupo/projeto/image-refresh-view:latest",  # Substituir pelo valor real se necessário
+        image="{{ var.value.REGISTRY_URL }}/clientes/cnv/extrata/services/job-refresh-view:r-1-0-0",
         image_pull_secrets=[{"name": "gitlab-registry-secret"}],
         image_pull_policy="Always",
         name="pod-refresh_view",
