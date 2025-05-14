@@ -17,6 +17,9 @@ with DAG(
     catchup=False,
     tags=["k8s"],
 ) as dag:
+    # Get list of files in DATA_PATH to display in the pod
+    files_in_data_path = "\n".join([f"- {f}" for f in os.listdir(DATA_PATH)])
+
     test_task = KubernetesPodOperator(
         task_id="run_test_pod",
         name="airflow-test",
@@ -25,7 +28,7 @@ with DAG(
         cmds=[
             "sh",
             "-c",
-            f"echo 'DAG Path: {DATA_PATH}'; echo 'Hello and wait a bit'; sleep 5",
+            f"echo 'DAG Path: {DATA_PATH}'; echo 'Files in DATA_PATH:'; echo '{files_in_data_path}'; echo 'Hello and wait a bit'; sleep 5",
         ],
         get_logs=True,
         is_delete_operator_pod=True,  # Deleta após capturar logs
