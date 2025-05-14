@@ -9,14 +9,17 @@ from airflow.utils.log.logging_mixin import LoggingMixin
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 log = LoggingMixin().log
-log.info(f"Pasta geral {os.path.dirname(__file__)}")
-log.info(f"Factory carregado. Arquivos em {DATA_PATH}: {os.listdir(DATA_PATH)}")
-
+log.info(f"✅ Factory iniciado. DATA_PATH = {DATA_PATH}")
+try:
+    files = os.listdir(DATA_PATH)
+    log.info(f"📂 Arquivos encontrados em {DATA_PATH}: {files}")
+except Exception as e:
+    log.error(f"❌ Erro ao acessar {DATA_PATH}: {e}")
 
 def load_yaml_configs(path):
     jobs = []
     for file in os.listdir(path):
-        file = file.strip()  # remove espaços acidentais no nome do arquivo
+        file = file.strip()
         if file.endswith(".yaml"):
             with open(os.path.join(path, file), "r") as stream:
                 try:
@@ -24,9 +27,8 @@ def load_yaml_configs(path):
                     if job.get("enabled", True):
                         jobs.append(job)
                 except yaml.YAMLError as e:
-                    print(f"❌ Erro ao ler {file}: {e}")
+                    log.error(f"❌ Erro ao ler {file}: {e}")
     return jobs
-
 
 def resolve_airflow_vars(value):
     if isinstance(value, str):
@@ -42,7 +44,6 @@ def resolve_airflow_vars(value):
             return resolved
     return value
 
-
 def deep_resolve(obj):
     if isinstance(obj, dict):
         return {k: deep_resolve(v) for k, v in obj.items()}
@@ -50,7 +51,6 @@ def deep_resolve(obj):
         return [deep_resolve(item) for item in obj]
     else:
         return resolve_airflow_vars(obj)
-
 
 def validate_job_config(config):
     required_keys = [
@@ -66,7 +66,6 @@ def validate_job_config(config):
         raise ValueError(
             f"❌ Configuração da DAG {config.get('dag_id', 'unknown')} está incompleta: faltam {missing}"
         )
-
 
 def create_dag(config):
     config = deep_resolve(config)
@@ -110,10 +109,10 @@ def create_dag(config):
 
     return dag
 
-
 for job_config in load_yaml_configs(DATA_PATH):
     dag_id = job_config["dag_id"]
     try:
         globals()[dag_id] = create_dag(job_config)
+        log.info(f"✅ DAG {dag_id} criada com sucesso.")
     except Exception as e:
-        print(f"❌ Erro ao criar DAG {dag_id}: {e}")
+        log.error(f"❌ Erro ao criar DAG {dag_id}: {e}")
