@@ -3,6 +3,19 @@ from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperato
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 
+from kubernetes.client import V1ResourceRequirements
+
+container_resources = V1ResourceRequirements(
+    limits={
+        "memory": "1Gi",
+        "cpu": "1000m"
+    },
+    requests={
+        "memory": "512Mi",
+        "cpu": "500m"
+    }
+)
+
 DEFAULT_ARGS = {
     "owner": "airflow",
     "retries": 1,
@@ -33,12 +46,7 @@ with DAG(
             "POSTGRES_HOST": '{{ var.value.POSTGRES_HOST }}',
             "POSTGRES_PORT": '{{ var.value.POSTGRES_PORT }}',
         },
-        resources={
-            "request_memory": "512Mi",
-            "request_cpu": "500m",
-            "limit_memory": "1Gi",
-            "limit_cpu": "1000m",
-        },
+        container_resources=container_resources,
         is_delete_operator_pod=True,
         get_logs=True,
     )

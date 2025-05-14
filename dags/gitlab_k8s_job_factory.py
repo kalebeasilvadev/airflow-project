@@ -6,6 +6,8 @@ from airflow.utils.dates import days_ago
 from airflow.models import Variable
 from datetime import timedelta
 from airflow.utils.log.logging_mixin import LoggingMixin
+from kubernetes.client import V1ResourceRequirements
+
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 log = LoggingMixin().log
@@ -87,6 +89,16 @@ def create_dag(config):
     )
 
     with dag:
+        container_resources = V1ResourceRequirements(
+            limits={
+                "memory": config["resources"]["limit_memory"],
+                "cpu": config["resources"]["limit_cpu"]
+            },
+            requests={
+                "memory": config["resources"]["request_memory"],
+                "cpu": config["resources"]["request_cpu"]
+            }
+        )
         KubernetesPodOperator(
             task_id="run_gitlab_pod",
             namespace=config["namespace"],
@@ -96,12 +108,7 @@ def create_dag(config):
             name=f"pod-{config['dag_id']}",
             labels={"sidecar.istio.io/inject": "false"},
             env_vars=config["env_vars"],
-            resources={
-                "request_memory": config["resources"]["request_memory"],
-                "request_cpu": config["resources"]["request_cpu"],
-                "limit_memory": config["resources"]["limit_memory"],
-                "limit_cpu": config["resources"]["limit_cpu"],
-            },
+            container_resources=container_resources,
             is_delete_operator_pod=True,
             get_logs=True,
         )
