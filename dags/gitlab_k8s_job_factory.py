@@ -7,15 +7,16 @@ from airflow.models import Variable
 from datetime import timedelta
 from airflow.utils.log.logging_mixin import LoggingMixin
 
-
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 log = LoggingMixin().log
 log.info(f"Pasta geral {os.path.dirname(__file__)}")
 log.info(f"Factory carregado. Arquivos em {DATA_PATH}: {os.listdir(DATA_PATH)}")
 
+
 def load_yaml_configs(path):
     jobs = []
     for file in os.listdir(path):
+        file = file.strip()  # remove espaços acidentais no nome do arquivo
         if file.endswith(".yaml"):
             with open(os.path.join(path, file), "r") as stream:
                 try:
@@ -28,14 +29,11 @@ def load_yaml_configs(path):
 
 
 def resolve_airflow_vars(value):
-    """Resolve airflow_var no formato airflow_var:VAR_NAME ou embutido na string"""
     if isinstance(value, str):
         if value.startswith("airflow_var:"):
-            # Exatamente o valor da variável
             var_name = value.split("airflow_var:")[1]
             return Variable.get(var_name)
         elif "airflow_var:" in value:
-            # Substituição embutida
             parts = value.split("airflow_var:")
             resolved = parts[0]
             for part in parts[1:]:
@@ -46,7 +44,6 @@ def resolve_airflow_vars(value):
 
 
 def deep_resolve(obj):
-    """Aplica resolve_airflow_vars recursivamente em dicionários e listas"""
     if isinstance(obj, dict):
         return {k: deep_resolve(v) for k, v in obj.items()}
     elif isinstance(obj, list):
@@ -114,11 +111,9 @@ def create_dag(config):
     return dag
 
 
-# 🏭 Factory → cria todas as DAGs dinamicamente
 for job_config in load_yaml_configs(DATA_PATH):
     dag_id = job_config["dag_id"]
     try:
         globals()[dag_id] = create_dag(job_config)
     except Exception as e:
         print(f"❌ Erro ao criar DAG {dag_id}: {e}")
-

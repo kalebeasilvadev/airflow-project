@@ -17,7 +17,11 @@ with DAG(
         name="airflow-test",
         namespace="airflow",
         image="busybox",
-        cmds=["sh", "-c", f"echo 'DAG Path: {dag_file_path}'; echo 'Hello and wait a bit'; sleep 5"],
+        cmds=[
+            "sh",
+            "-c",
+            f"echo 'DAG Path: {dag_file_path}'; echo 'Hello and wait a bit'; sleep 5",
+        ],
         get_logs=True,
         is_delete_operator_pod=True,  # Deleta após capturar logs
     )
