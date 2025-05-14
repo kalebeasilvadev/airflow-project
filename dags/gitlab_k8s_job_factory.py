@@ -104,7 +104,6 @@ def create_dag(config):
             },
             is_delete_operator_pod=True,
             get_logs=True,
-            kube_conn_id="kubernetes_default",
         )
 
     return dag
