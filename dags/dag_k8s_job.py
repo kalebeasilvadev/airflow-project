@@ -3,7 +3,12 @@ from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperato
 from datetime import datetime
 import os
 
-dag_file_path = os.path.abspath(__file__)
+from airflow.utils.log.logging_mixin import LoggingMixin
+
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+log = LoggingMixin().log
+log.info(f"Pasta geral {os.path.dirname(__file__)}")
+log.info(f"Factory carregado. Arquivos em {DATA_PATH}: {os.listdir(DATA_PATH)}")
 
 with DAG(
     dag_id="test_pod_operator",
@@ -20,7 +25,7 @@ with DAG(
         cmds=[
             "sh",
             "-c",
-            f"echo 'DAG Path: {dag_file_path}'; echo 'Hello and wait a bit'; sleep 5",
+            f"echo 'DAG Path: {DATA_PATH}'; echo 'Hello and wait a bit'; sleep 5",
         ],
         get_logs=True,
         is_delete_operator_pod=True,  # Deleta após capturar logs
